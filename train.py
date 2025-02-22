@@ -41,7 +41,7 @@ def train(root_dir: str):
     config_path = cur_path / 'config' / 'flow_mnist.yaml'
     config = yaml.load(open(config_path, 'rb'), Loader=yaml.FullLoader)
     base_channels = config.get('base_channels', 16)
-    epochs = config.get('eopchs', 10)
+    epochs = config.get('epochs', 10)
     batch_size = config.get('batch_size', 128)
     lr_adjust_epoch = config.get('lr_adjust_epoch', 50)
     batch_print = config.get('batch_print', True)
