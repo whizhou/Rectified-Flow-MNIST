@@ -15,7 +15,7 @@ class RectifiedFlow():
         """
         assert z1 is not None, "offer the origin image"
 
-        t = torch.rand((z1.shape[0], 1))
+        t = torch.rand((z1.shape[0], 1, 1, 1))
 
         if z0 is None:
             z0 = torch.randn_like(z1)
@@ -23,7 +23,13 @@ class RectifiedFlow():
         z_t = t * z1 + (1 - t) * z0
         target = z1 - z0
 
-        return z_t, t, target
+        return z_t, t.view(-1), target
         
 
-
+if __name__ == "__main__":
+    
+    rf = RectifiedFlow()
+    x_t, t, target = rf.get_train_turple(torch.randn((2, 3, 4, 4)), torch.ones((2, 3, 4, 4)))
+    print(x_t)
+    print(t)
+    print(target)

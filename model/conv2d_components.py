@@ -23,7 +23,7 @@ class Conv2dBlock(nn.Module):
     '''
         Conv2d -> GroupNorm -> Mish
     '''
-    def __init(self, in_channels, out_channels, kernel_size, n_groups=8):
+    def __init__(self, in_channels, out_channels, kernel_size, n_groups=8):
         super().__init__()
 
         self.block = nn.Sequential(

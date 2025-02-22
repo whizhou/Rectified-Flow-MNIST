@@ -59,7 +59,8 @@ def train(root_dir: str):
     # Transform PIL to tensor and normalize to [-1, 1]
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5], std=[0.5])
+        # transforms.Normalize(mean=[0.5], std=[0.5])
+        transforms.Normalize(mean=[0], std=[1])
     ])
 
     data_path = cur_path / 'data'
@@ -67,7 +68,10 @@ def train(root_dir: str):
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     # Load model
-    model = ConditionalUnet(1, base_channels)
+    model = ConditionalUnet2D(
+        1, base_channels,
+        global_cond_embed_dim=128
+    )
     model.to(device)
     
     # Load optimizer
@@ -83,7 +87,7 @@ def train(root_dir: str):
 
     # Create folder for save path
     save_path = cur_path.joinpath(save_path)
-    save_path.touch(exist_ok=True)
+    save_path.mkdir(exist_ok=True)
 
     # train epochs
     for epoch in range(epochs+1):
@@ -94,6 +98,7 @@ def train(root_dir: str):
 
             x_t, t, v_target = rf.get_train_turple(z0=x0, z1=x1)
 
+            y = y.to(device)
             x_t = x_t.to(device)
             t = t.to(device)
             v_target = v_target.to(device)
@@ -135,7 +140,7 @@ def train(root_dir: str):
 
 if __name__ == "__main__":
     print(torch.cuda.__name__)
-    root_dir = Path(__file__).parent.absolute() # 默认 train.py 位于项目的根目录下
+    root_dir = Path(__file__).resolve().parent  # 默认 train.py 位于项目的根目录下
     # config_path = cur_path.joinpath("config").joinpath("flow_minist.yaml")
     print(root_dir.as_posix())
     # print(root_dir.absolute())
