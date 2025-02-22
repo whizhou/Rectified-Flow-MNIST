@@ -74,7 +74,7 @@ def train(root_dir: str):
     loss_list = []
 
     # Create folder for save path
-    save_path = cur_path.joinpath(save_path)
+    save_path = cur_path.joinpath('checkpoints', save_path)
     save_path.mkdir(exist_ok=True)
 
     # train epochs
@@ -95,8 +95,7 @@ def train(root_dir: str):
                 x_t = torch.cat([x_t, x_t.clone()], dim=0)
                 t = torch.cat([t, t.clone()], dim=0)
                 v_target = torch.cat([v_target, v_target.clone()], dim=0)
-                y = torch.cat([y, y.clone()], dim=0)
-
+                y = torch.cat([y, -torch.ones_like(y)], dim=0)
                 y.to(device)
             else:
                 y = None
@@ -118,18 +117,18 @@ def train(root_dir: str):
         scheduler.step()
 
         if checkpoint_save and epoch % checkpoint_save_interval == 0:
-            print(f'Saving model {epoch} to {save_path.as_posix()}')
+            print(f'Saving model Unet_{epoch} to {save_path.as_posix()}')
             save_dict = dict(model=model.state_dict(),
                              optimizer=optimizer.state_dict(),
                              epoch=epoch,
                              loss_list=loss_list,
-                             input_dim=1,
+                             input_dim=input_dim,
                              base_channels=base_channels,
-                             global_cond_dim=128
+                             global_cond_embed_dim=global_cond_embed_dim
                              )
             torch.save(save_dict, save_path.joinpath(f'Unet_{epoch}.pth'))
 
-    print(f'Saving model final to {save_path.as_posix()}')
+    print(f'Saving model Unet_final to {save_path.as_posix()}')
     save_dict = dict(model=model.state_dict(),
                      optimizer=optimizer.state_dict(),
                      epoch=epochs,

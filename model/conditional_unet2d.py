@@ -8,12 +8,12 @@ from model.positional_embedding import SinusoidalPosEmb
 
 class ConditionalResidualBlock2D(nn.Module):
     def __init__(self,
-        in_channels,
-        out_channels,
-        cond_dim,
-        kernel_size=3,
-        n_groups=8,
-        cond_predict_scale=False):
+            in_channels,
+            out_channels,
+            cond_dim,
+            kernel_size=3,
+            n_groups=8,
+            cond_predict_scale=False):
         super().__init__()
 
         self.blocks = nn.ModuleList([
@@ -151,6 +151,8 @@ class ConditionalUnet2D(nn.Module):
             Conv2dBlock(start_dim, start_dim, kernel_size=kernel_size),
             nn.Conv2d(start_dim, input_dim, 1)
         )
+
+        # self.global_cond_embed_dim = global_cond_embed_dim
 
 
     def forward(self,
