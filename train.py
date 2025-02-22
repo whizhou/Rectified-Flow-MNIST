@@ -24,23 +24,11 @@ def train(root_dir: str):
 
     cur_path = Path(root_dir)
 
-    '''
-    config_path : yaml 配置文件路径, 包含以下参数
-            base_channels(int, optional): Unet 的基础通道数, default - 16
-            epochs (int, optional): 训练轮数, default - 10
-            batch_size (int, optional): 批大小, default - 128
-            lr_adjust_epoch (int, optional): 学习率调整轮数, default - 50
-            batch_print (bool, optional): 是否打印 batch 信息, default - True
-            bath_print_interval (int, optional): batch 打印信息间隔(/batch), default - 100
-            checkpoint_save (bool, optional): 是否保存 checkpoint, default - True
-            checkpoint_save_interval (int, optional): checkpoint 保存间隔(/epoch), default - 1
-            save_path (str, optional): checkpoint 保存对于 'roo_dir/checkpoints' 的相对路径, default - None
-            use_cfg (bool, optional): 是否使用 Classifier-free Guidance 训练条件生成模型, default - False
-            device (str, optional): 训练设备, default - 'cuda'
-    '''
     config_path = cur_path / 'config' / 'flow_mnist.yaml'
     config = yaml.load(open(config_path, 'rb'), Loader=yaml.FullLoader)
+    input_dim =config.get('input_dim', 1)
     base_channels = config.get('base_channels', 16)
+    global_cond_embed_dim = config.get('global_cond_embed_dim', 128)
     epochs = config.get('epochs', 10)
     batch_size = config.get('batch_size', 128)
     lr_adjust_epoch = config.get('lr_adjust_epoch', 50)
@@ -69,8 +57,8 @@ def train(root_dir: str):
 
     # Load model
     model = ConditionalUnet2D(
-        1, base_channels,
-        global_cond_embed_dim=128
+        input_dim=input_dim, base_channels=base_channels,
+        global_cond_embed_dim=global_cond_embed_dim
     )
     model.to(device)
     
@@ -90,7 +78,7 @@ def train(root_dir: str):
     save_path.mkdir(exist_ok=True)
 
     # train epochs
-    for epoch in range(epochs+1):
+    for epoch in range(epochs):
         for batch, data in enumerate(dataloader):
             x1, y = data
 
@@ -134,9 +122,22 @@ def train(root_dir: str):
             save_dict = dict(model=model.state_dict(),
                              optimizer=optimizer.state_dict(),
                              epoch=epoch,
-                             loss_list=loss_list)
+                             loss_list=loss_list,
+                             input_dim=1,
+                             base_channels=base_channels,
+                             global_cond_dim=128
+                             )
             torch.save(save_dict, save_path.joinpath(f'Unet_{epoch}.pth'))
 
+    print(f'Saving model final to {save_path.as_posix()}')
+    save_dict = dict(model=model.state_dict(),
+                     optimizer=optimizer.state_dict(),
+                     epoch=epochs,
+                     loss_list=loss_list,
+                     input_dim=input_dim,
+                     base_channels=base_channels,
+                     global_cond_embed_dim=global_cond_embed_dim)
+    torch.save(save_dict, save_path.joinpath(f'Unet_final.pth'))
 
 if __name__ == "__main__":
     print(torch.cuda.__name__)
