@@ -5,7 +5,7 @@ import pathlib
 from pathlib import Path
 from model.conditional_unet2d import ConditionalUnet2D
 from model.rectified_flow import RectifiedFlow
-pathlib.PosixPath
+
 
 def infer(
         checkpoint_path,
@@ -97,12 +97,23 @@ if __name__ == "__main__":
     for i in range(10):
         y.extend([i] * 10)
     work_dir = Path(__file__).resolve().parent
-    print(work_dir)
+
+    # with condition
     infer(
         checkpoint_path=work_dir.joinpath('checkpoints', 'v1.1-cfg', 'Unet_final.pth'),
-        step=100,
+        step=10,
+        num_imgs=100,
+        y=torch.tensor(y),
+        cfg_scale=5.0,
+        save_path='conditional'
+    )
+
+    # without condition
+    infer(
+        checkpoint_path=work_dir.joinpath('checkpoints', 'v1.1-cfg', 'Unet_final.pth'),
+        step=10,
         num_imgs=100,
         # y=torch.tensor(y),
         cfg_scale=5.0,
-        save_path='test'
+        save_path='unconditional'
     )

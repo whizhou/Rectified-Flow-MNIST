@@ -190,7 +190,7 @@ class ConditionalUnet2D(nn.Module):
             x = mid_module(x, global_feature)
         
         # 5. Up Sample Layers
-        for ixd, (resnet, resnet2, upsample) in enumerate(self.up_modules):
+        for idx, (resnet, resnet2, upsample) in enumerate(self.up_modules):
             x = torch.cat([x, h.pop()], dim=1)
             x = resnet(x, global_feature)
             x = resnet2(x, global_feature)
