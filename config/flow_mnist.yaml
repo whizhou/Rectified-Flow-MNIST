@@ -3,9 +3,12 @@ epochs: 50  # epochs (int, optional): 训练轮数, default - 10
 batch_size: 16  # batch_size (int, optional): 批大小, default - 128
 lr_adjust_epoch: 25  # lr_adjust_epoch (int, optional): 学习率调整轮数, default - 50
 batch_print: True  # batch_print (bool, optional): 是否打印 batch 信息, default - True
-batch_print_interval: 100 # bath_print_interval (int, optional): batch 打印信息间隔(/batch), default - 100
+batch_print_interval: 100  # bath_print_interval (int, optional): batch 打印信息间隔(/batch), default - 100
 checkpoint_save: True  # checkpoint_save (bool, optional): 是否保存 checkpoint, default - True
 checkpoint_save_interval: 10 # checkpoint_save_interval (int, optional): checkpoint 保存间隔(/epoch), default - 1
-save_path: 'v1.1-cfg'  # save_path (str, optional): checkpoint 保存于 './checkpoints/save_path', default - None
+tag: 'v1.2-cfg'  # save_path (str, optional): checkpoint 保存于 './checkpoints/save_path', default - None
 use_cfg: True  # use_cfg (bool, optional): 是否使用 Classifier-free Guidance 训练条件生成模型, default - False
-device: 'cuda' # device (str, optional): 训练设备, default - 'cuda'
+device: 'cuda'  # device (str, optional): 训练设备, default - 'cuda'
+load_checkpoint_tag: False  # (bool, optional): 是否加载checkpoint继续训练模型, default-False
+load_checkpoint_tag: 'v1.2-cfg'  # （str, optional): 加载checkpoint模型的tag, default-None
+load_checkpoint_epoch: 21  # (int, optional): 加载的checkpoing模型的epoch, default-None

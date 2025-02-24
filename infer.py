@@ -69,18 +69,20 @@ def infer(
 
             if y is not None:
                 y_i = y[i].unsqueeze(0).to(device)
-            
+
             for j in range(step):
                 t = j * dt
                 t = torch.tensor([t]).to(device)
+                y_uncond = -torch.ones(1)
+                y_uncond.to(device)
                 if y is not None:
                     v_pred_uncond = model(sample=x_t, timestep=t,
-                                          global_cond=-torch.ones(1).to(device))
+                                          global_cond=y_uncond)
                     v_pred_cond = model(sample=x_t, timestep=t, global_cond=y_i)
                     v_pred = v_pred_uncond + cfg_scale * (v_pred_cond - v_pred_uncond)
                 else:
                     v_pred = model(sample=x_t, timestep=t,
-                                   global_cond=-torch.ones(1).to(device))
+                                   global_cond=y_uncond)
                 x_t = x_t + v_pred * dt
             
             x_t = x_t.clamp(0, 1)

@@ -174,8 +174,9 @@ class ConditionalUnet2D(nn.Module):
 
         # 2. global condition
         if global_cond is not None:
-            global_cond = self.global_cond_encoder(global_cond)
-            global_feature = torch.cat([global_feature, global_cond], axis=-1)
+            global_cond_embed = self.global_cond_encoder(global_cond)
+            global_cond_embed[global_cond == -1] = 0.0
+            global_feature = torch.cat([global_feature, global_cond_embed], axis=-1)
         
         # 3. Down Sample Layers
         h = []

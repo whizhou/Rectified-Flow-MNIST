@@ -36,19 +36,36 @@ def train(root_dir: str):
     batch_print_interval = config.get('batch_print_interval', 100)
     checkpoint_save = config.get('checkpoint_save', True)
     checkpoint_save_interval = config.get('checkoint_save_interval', 1)
-    save_path = config.get('save_path', None)
+    tag = config.get('tag', None)
     use_cfg = config.get('use_cfg', False)
     device = config.get('device', 'cuda' if torch.cuda.is_available() else 'cpu')
+    load_checkpoint = config.get('load_checkpoing', False)
+    load_checkpoint_tag = config.get('load_checkpoint_tag', None)
+    load_checkpoint_epoch = config.get('load_checkpoing_epoch', None)
 
+    print(f'input_dim: {input_dim}')
+    print(f'base_channnels: {base_channels}')
+    print(f'global_cond_embed_dim: {global_cond_embed_dim}')
+    print(f'epochs: {epochs}')
+    print(f'batch_size: {batch_size}')
+    print(f'lr_adjust_epoch: {lr_adjust_epoch}')
+    print(f'batch_print: {batch_print}')
+    print(f'batch_print_interval: {batch_print_interval}')
+    print(f'checkpoint_save: {checkpoint_save}')
+    print(f'checkpoint_save_interval: {checkpoint_save_interval}')
+    print(f'tag: {tag}')
+    print(f'use_cfg: {use_cfg}')
+    print(f'device: {device}')
+    print(f'load_checkpoint: {load_checkpoint}')
     
     # Train Rectified Flow model
 
     # Load dataset
-    # Transform PIL to tensor and normalize to [-1, 1]
+    # Transform PIL to tensor and normalize to [0,1]
     transform = transforms.Compose([
         transforms.ToTensor(),
         # transforms.Normalize(mean=[0.5], std=[0.5])
-        transforms.Normalize(mean=[0], std=[1])
+        # transforms.Normalize(mean=[0], std=[1])
     ])
 
     data_path = cur_path / 'data'
@@ -63,9 +80,9 @@ def train(root_dir: str):
     model.to(device)
     
     # Load optimizer
-    optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=0.01)
+    optimizer = optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.1)
 
-    # learning rate adjust
+    # lr adjust
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=lr_adjust_epoch, gamma=0.1)
 
     # Load rectified flow
@@ -73,8 +90,12 @@ def train(root_dir: str):
 
     loss_list = []
 
+    # Load the half-trained model and continue training
+    if load_checkpoint:
+        pass
+
     # Create folder for save path
-    save_path = cur_path.joinpath('checkpoints', save_path)
+    save_path = cur_path.joinpath('checkpoints', tag)
     save_path.mkdir(exist_ok=True)
 
     # train epochs
@@ -120,6 +141,7 @@ def train(root_dir: str):
             print(f'Saving model Unet_{epoch} to {save_path.as_posix()}')
             save_dict = dict(model=model.state_dict(),
                              optimizer=optimizer.state_dict(),
+                             scheduler=scheduler.state_dict(),
                              epoch=epoch,
                              loss_list=loss_list,
                              input_dim=input_dim,
@@ -131,6 +153,7 @@ def train(root_dir: str):
     print(f'Saving model Unet_final to {save_path.as_posix()}')
     save_dict = dict(model=model.state_dict(),
                      optimizer=optimizer.state_dict(),
+                     scheduler=scheduler.state_dict(),
                      epoch=epochs,
                      loss_list=loss_list,
                      input_dim=input_dim,
