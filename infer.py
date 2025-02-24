@@ -74,7 +74,7 @@ def infer(
                 t = j * dt
                 t = torch.tensor([t]).to(device)
                 y_uncond = -torch.ones(1)
-                y_uncond.to(device)
+                y_uncond = y_uncond.to(device)
                 if y is not None:
                     v_pred_uncond = model(sample=x_t, timestep=t,
                                           global_cond=y_uncond)
@@ -102,20 +102,20 @@ if __name__ == "__main__":
 
     # with condition
     infer(
-        checkpoint_path=work_dir.joinpath('checkpoints', 'v1.1-cfg', 'Unet_final.pth'),
+        checkpoint_path=work_dir.joinpath('checkpoints', 'v1.2-cfg', 'Unet_final.pth'),
         step=10,
         num_imgs=100,
         y=torch.tensor(y),
         cfg_scale=5.0,
-        save_path='conditional'
+        save_path='conditional-v1.2'
     )
 
     # without condition
     infer(
-        checkpoint_path=work_dir.joinpath('checkpoints', 'v1.1-cfg', 'Unet_final.pth'),
+        checkpoint_path=work_dir.joinpath('checkpoints', 'v1.2-cfg', 'Unet_final.pth'),
         step=10,
         num_imgs=100,
         # y=torch.tensor(y),
         cfg_scale=5.0,
-        save_path='unconditional'
+        save_path='unconditional-v1.2'
     )

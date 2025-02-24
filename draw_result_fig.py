@@ -22,9 +22,11 @@ def draw_result_fig(label: str):
     plt.subplots_adjust(wspace=0.1, hspace=0.1)
     plt.tight_layout()
     # plt.show()
-    save_path = img_path.parent.joinpath(f'{label}.png')
+    save_path = Path(__file__).resolve().parent.joinpath(
+        'result_figs', f'{label}.png'
+    )
     plt.savefig(save_path)
 
 if __name__ == "__main__":
-    draw_result_fig('conditional')
-    draw_result_fig('unconditional')
+    draw_result_fig('conditional-v1.2')
+    draw_result_fig('unconditional-v1.2')

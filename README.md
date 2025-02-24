@@ -8,12 +8,12 @@
 
 * 模型收敛较好
 
-![loss_curve](results/loss_curve.png)
+![loss_curve](result_figs/loss_curve.png)
 
 ### epoch 50, step 10, conditional
 
-![result_img](results/conditional.png)
+![result_img](result_figs/conditional.png)
 
 ### epoch 50, step 10, unconditional
 
-![result_img](results/unconditional.png)
+![result_img](result_figs/unconditional.png)
